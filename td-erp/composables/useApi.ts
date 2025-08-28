@@ -11,10 +11,7 @@ interface DataResponse {
 }
 const getConfig = () => {
   const auth = useAuthStore();
-  let config_header: { [key: string]: string } = {
-    "X-Api-Key": "BTC128M8093ILKR584ERM147IAGJ2IX2",
-    "Api-Mode": "2",
-  };
+  let config_header: { [key: string]: string } = {};
 
   if (auth.token) {
     config_header = {
@@ -62,7 +59,7 @@ const request = async <T>(
         },
         retry: 0,
       });
-      return { data: toRef(data), error: error.value };
+      return { data, error: error.value };
     } catch (e) {
       error.value = true;
 
@@ -116,7 +113,7 @@ const request = async <T>(
     server: true,
     watch: false,
   });
-  return { ...data, error: error.value };
+  return { ...data, data: unref(data.data), error: error.value };
 };
 // ko để async do useFEtch đã xử lí r
 export const useApi = <T = any>() => {
