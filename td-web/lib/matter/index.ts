@@ -10,7 +10,7 @@ import {
   Constraint,
 } from "matter-js";
 import { createMouseDrag } from "./interactions/mouse";
-const createWall = (render: Render) => {
+export const createWall = (render: Render) => {
   const renderHeight = render.options.height;
   const renderWidth = render.options.width;
   const bottom = Bodies.rectangle(
@@ -53,12 +53,15 @@ const createWall = (render: Render) => {
   return [top, left, right, bottom];
 };
 const DEFAULT_WALL_WIDTH = 5;
-export const manifestMatter = (width: number, height: number) => {
+export const manifestMatter = (
+  width: number,
+  height: number,
+  element: HTMLDivElement
+) => {
   const engine = Engine.create();
   engine.timing.timeScale = 0.8;
-  console.log(width, height);
   const render = Render.create({
-    element: document.getElementById("matter")!,
+    element,
     engine: engine,
     options: {
       width,
@@ -102,7 +105,7 @@ export const manifestMatter = (width: number, height: number) => {
     parts: [chassis, wheelA, wheelB],
     frictionAir: 1,
   });
-  Composite.add(engine.world, [boxA, boxB, ...createWall(render)]);
+  Composite.add(engine.world, [boxA, boxB]);
   // Composite.add(engine.world, car);
   // đây là biến khởi tạo ko cần sửa
   Render.run(render);
