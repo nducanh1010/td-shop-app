@@ -8,7 +8,7 @@ export const createMouseDrag = (engine: Engine, render: Render) => {
     constraint: {
       stiffness: 0.2,
       render: {
-        visible: true,
+        visible: false,
       },
     },
   });
