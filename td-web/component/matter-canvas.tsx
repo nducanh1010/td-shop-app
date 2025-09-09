@@ -6,6 +6,7 @@ import { createWall, manifestMatter } from "@/lib/matter";
 export default function MatterCanvas() {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const matterRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!matterRef.current) return;
     const { render, engine } = manifestMatter(
@@ -18,12 +19,16 @@ export default function MatterCanvas() {
     const handleResize = () => {
       if (!matterRef.current) return;
       const { width, height } = matterRef.current?.getBoundingClientRect();
-
+      console.log(width, height);
       render.options.width = width;
       render.options.height = height;
+      render.canvas.height = height;
+      render.canvas.width = width;
       console.log("resize");
       // rebuild walls
-      World.remove(engine.world, walls);
+      walls.forEach((wall) => {
+        World.remove(engine.world, wall);
+      });
       walls = createWall(render);
       World.add(engine.world, walls);
     };
@@ -31,14 +36,20 @@ export default function MatterCanvas() {
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
-      // Matter.Render.stop(render);
-      // Matter.World.clear(engine.world, false);
-      // Matter.Engine.clear(engine);
-      // render.canvas.remove();
-      // render.textures = {};
-        Matter.Render.setPixelRatio(render, window.devicePixelRatio);
+      Matter.Render.stop(render);
+      Matter.World.clear(engine.world, false);
+      Matter.Engine.clear(engine);
+      render.canvas.remove();
+      render.textures = {};
+      // Matter.Render.setPixelRatio(render, window.devicePixelRatio);
     };
   }, []);
 
-  return <div ref={matterRef} id="matter " className="w-full h-full"></div>;
+  return (
+    <div
+      ref={matterRef}
+      id="matter "
+      className="w-full h-full "
+    ></div>
+  );
 }

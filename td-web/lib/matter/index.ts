@@ -75,7 +75,13 @@ export const manifestMatter = (
   const boxA = Bodies.rectangle(400, 200, 80, 80, {
     render: {},
   });
-  Body.create({ slop: 0.01 });
+  const originalCreate = Body.create;
+
+  Body.create = function (options) {
+    const body = originalCreate.call(this, options);
+    body.slop = 0.05;
+    return body;
+  };
   const renderHeight = render.options.height;
   const renderWidth = render.options.width;
   const boxB = Bodies.rectangle(450, 50, 80, 80);
