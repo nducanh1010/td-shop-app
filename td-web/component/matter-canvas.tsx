@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Matter, { Bodies, Composite, World } from "matter-js";
+import Matter, { Bodies, Composite, Render, World } from "matter-js";
 import { createWall, manifestMatter } from "@/lib/matter";
 
 export default function MatterCanvas() {
@@ -9,7 +9,7 @@ export default function MatterCanvas() {
 
   useEffect(() => {
     if (!matterRef.current) return;
-    const { render, engine } = manifestMatter(
+    const { render, engine, runner } = manifestMatter(
       matterRef.current.clientWidth,
       matterRef.current.clientHeight,
       matterRef.current
@@ -19,12 +19,16 @@ export default function MatterCanvas() {
     const handleResize = () => {
       if (!matterRef.current) return;
       const { width, height } = matterRef.current?.getBoundingClientRect();
-      console.log(width, height);
-      render.options.width = width;
-      render.options.height = height;
-      render.canvas.height = height;
-      render.canvas.width = width;
-      console.log("resize");
+      // render.options.width = width;
+      // render.options.height = height;
+      // render.canvas.height = height;
+      // render.canvas.width = width;
+      render.canvas.style.position = "fixed";
+      Render.setSize(render, width, height);
+      // Render.lookAt(render, {
+      //   min: { x: 0, y: 0 },
+      //   max: { x: width, y: height },
+      // });
       // rebuild walls
       walls.forEach((wall) => {
         World.remove(engine.world, wall);
@@ -37,19 +41,14 @@ export default function MatterCanvas() {
     return () => {
       window.removeEventListener("resize", handleResize);
       Matter.Render.stop(render);
-      Matter.World.clear(engine.world, false);
-      Matter.Engine.clear(engine);
-      render.canvas.remove();
-      render.textures = {};
+      Matter.Runner.stop(runner);
+      // Matter.World.clear(engine.world, false);
+      // Matter.Engine.clear(engine);
+      // render.canvas.remove();
+      // render.textures = {};
       // Matter.Render.setPixelRatio(render, window.devicePixelRatio);
     };
   }, []);
 
-  return (
-    <div
-      ref={matterRef}
-      id="matter "
-      className="w-full h-full "
-    ></div>
-  );
+  return <div ref={matterRef} id="matter " className="w-full h-full "></div>;
 }

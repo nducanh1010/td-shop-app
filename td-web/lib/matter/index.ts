@@ -8,6 +8,7 @@ import {
   Mouse,
   MouseConstraint,
   Constraint,
+  Events,
 } from "matter-js";
 import { createMouseDrag } from "./interactions/mouse";
 export const createWall = (render: Render) => {
@@ -20,6 +21,9 @@ export const createWall = (render: Render) => {
     DEFAULT_WALL_WIDTH,
     {
       isStatic: true,
+      render: {
+        fillStyle: "transparent",
+      },
       // chamfer
     }
   );
@@ -30,6 +34,9 @@ export const createWall = (render: Render) => {
     renderHeight!,
     {
       isStatic: true,
+      render: {
+        fillStyle: "transparent",
+      },
     }
   );
   const top = Bodies.rectangle(
@@ -39,6 +46,9 @@ export const createWall = (render: Render) => {
     DEFAULT_WALL_WIDTH,
     {
       isStatic: true,
+      render: {
+        fillStyle: "transparent",
+      },
     }
   );
   const left = Bodies.rectangle(
@@ -48,6 +58,9 @@ export const createWall = (render: Render) => {
     renderHeight!,
     {
       isStatic: true,
+      render: {
+        fillStyle: "transparent",
+      },
     }
   );
   return [top, left, right, bottom];
@@ -58,7 +71,14 @@ export const manifestMatter = (
   height: number,
   element: HTMLDivElement
 ) => {
-  const engine = Engine.create();
+  const engine = Engine.create({
+    timing: {
+      timeScale: 0.8,
+    },
+    velocityIterations: 4,
+    positionIterations: 6,
+    constraintIterations: 2,
+  });
   engine.timing.timeScale = 0.8;
   const render = Render.create({
     element,
@@ -77,11 +97,18 @@ export const manifestMatter = (
   });
   const originalCreate = Body.create;
 
-  Body.create = function (options) {
-    const body = originalCreate.call(this, options);
-    body.slop = 0.05;
-    return body;
+  Body.create = function (options = {}) {
+    const defaults = {
+      frictionAir: 0.01,
+      restitution: 0.3,
+      friction: 0.01,
+      density: 0.001,
+      frictionStatic:0.5
+    }
+
+    return originalCreate.call(Body, { ...defaults, ...options });
   };
+Body.create({frictionStatic:0.5,})
   const renderHeight = render.options.height;
   const renderWidth = render.options.width;
   const boxB = Bodies.rectangle(450, 50, 80, 80);
@@ -106,7 +133,9 @@ export const manifestMatter = (
   const chassis = Bodies.rectangle(0, 0, 120, 20);
   const wheelA = Bodies.circle(-40, 20, 20);
   const wheelB = Bodies.circle(40, 20, 20);
-
+  Events.on(engine, "collisionStart", (event) => {
+    console.log("collide composite", event);
+  });
   const car = Body.create({
     parts: [chassis, wheelA, wheelB],
     frictionAir: 1,
