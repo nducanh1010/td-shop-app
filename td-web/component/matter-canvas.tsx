@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Matter, { Bodies, Composite, Render, World } from "matter-js";
+import Matter, { Bodies, Composite, Composites, Render, World } from "matter-js";
 import { createWall, manifestMatter } from "@/lib/matter";
 
 export default function MatterCanvas() {
@@ -23,12 +23,12 @@ export default function MatterCanvas() {
       // render.options.height = height;
       // render.canvas.height = height;
       // render.canvas.width = width;
-      render.canvas.style.position = "fixed";
-      Render.setSize(render, width, height);
-      // Render.lookAt(render, {
-      //   min: { x: 0, y: 0 },
-      //   max: { x: width, y: height },
-      // });
+      // render.canvas.style.position = "fixed";
+      // Render.setSize(render, width, height);
+      Render.lookAt(render, {
+        min: { x: 0, y: 0 },
+        max: { x: width, y: height },
+      });
       // rebuild walls
       walls.forEach((wall) => {
         World.remove(engine.world, wall);
