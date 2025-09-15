@@ -1,5 +1,6 @@
 import FooterContent from "@/component/content";
 import MatterCanvas from "@/component/matter-canvas";
+import Lenis from "@/lib/lenis/lenis";
 import Image from "next/image";
 export default function Home() {
   return (

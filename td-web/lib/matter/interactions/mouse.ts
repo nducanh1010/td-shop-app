@@ -24,7 +24,6 @@ export const createMouseDrag = (engine: Engine, render: Render) => {
 
   (render as any).mouse = mouse;
   Events.on(mouseConstraint, "enddrag", (event) => {
-    console.log("mouse drop");
     for (const body of Composite.allBodies(engine.world)) {
       if (Math.abs(body.velocity.x) > 50) {
         body.velocity.x = Math.sign(body.velocity.x) * 10;

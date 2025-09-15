@@ -24,11 +24,11 @@ export default function MatterCanvas() {
       // render.canvas.height = height;
       // render.canvas.width = width;
       // render.canvas.style.position = "fixed";
-      // Render.setSize(render, width, height);
-      Render.lookAt(render, {
-        min: { x: 0, y: 0 },
-        max: { x: width, y: height },
-      });
+      Render.setSize(render, width, height);
+      // Render.lookAt(render, {
+      //   min: { x: 0, y: 0 },
+      //   max: { x: width, y: height },
+      // });
       // rebuild walls
       walls.forEach((wall) => {
         World.remove(engine.world, wall);

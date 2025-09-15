@@ -134,9 +134,7 @@ export const manifestMatter = (
   const chassis = Bodies.rectangle(0, 0, 120, 20);
   const wheelA = Bodies.circle(-40, 20, 20);
   const wheelB = Bodies.circle(40, 20, 20);
-  Events.on(engine, "collisionStart", (event) => {
-    console.log("collide composite", event);
-  });
+  Events.on(engine, "collisionStart", (event) => {});
   var stack = Composites.stack(20, 20, 10, 5, 0, 0, function (x, y) {
     var sides = Math.round(Common.random(1, 8));
 
