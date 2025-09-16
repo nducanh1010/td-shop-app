@@ -1,8 +1,7 @@
 "use client";
-
 import ReactLenis, { useLenis } from "lenis/react";
 import React, { useEffect, useRef } from "react";
-
+import Script from "next/script";
 export default function LenisProvider({
   children,
 }: {
@@ -10,30 +9,28 @@ export default function LenisProvider({
 }) {
   const lenisRef = useRef<any>(null);
   useEffect(() => {
+    let rafId: number;
     function update(time: DOMHighResTimeStamp) {
-      if (!lenisRef.current?.lenis) return;
       lenisRef.current?.lenis?.raf(time);
+      rafId = requestAnimationFrame(update);
     }
-
-    const rafId = requestAnimationFrame(update);
-
+    rafId = requestAnimationFrame(update);
     return () => cancelAnimationFrame(rafId);
   }, []);
-  const lenis = useLenis((lenis) => {
-    lenis?.on("scroll", ({ scroll, limit, velocity, direction }) => {
-      console.log("scroll position:", scroll);
-      console.log("velocity:", velocity);
-    });
-  });
   return (
     <>
       <ReactLenis
         root
-        options={{ autoRaf: false, smoothWheel: true }}
+        options={{
+          duration: 1.5,
+          autoRaf: false,
+          smoothWheel: true,
+        }}
         ref={lenisRef}
       >
         {children}
       </ReactLenis>
+      <Script src="" />
     </>
   );
 }
