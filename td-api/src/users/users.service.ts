@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { PaginateAndSort } from '../decorator/paginate.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { QueryUserDto, UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { User } from './entities/user.entity';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 @Injectable()
@@ -27,10 +28,25 @@ export class UsersService {
     return compareSync(password, hash);
   }
   async findAll() {
-    return this.userRepository.find();
+    return this.userRepository.createQueryBuilder('user').getMany();
   }
+  @PaginateAndSort()
+  async getList(query: QueryUserDto): Promise<User[]> {
+    const { name, email, username, role } = query;
+    const qb = this.userRepository.createQueryBuilder('user');
+    // Only append LIKE query if the parameter was actually provided!
+    if (name) qb.andWhere('user.name LIKE :name', { name: `%${name}%` });
+    if (email) qb.andWhere('user.email LIKE :email', { email: `%${email}%` });
+    if (username)
+      qb.andWhere('user.username LIKE :username', {
+        username: `%${username}%`,
+      });
+    if (role) qb.andWhere('user.role LIKE :role', { role: `%${role}%` });
 
-  async findOne(id: number) {
+    // The decorator @PaginateAndSort will automatically apply limit, offset, orderBy and execute getMany()
+    return qb as any;
+  }
+  async findOne(id: number, userR) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new BadRequestException('User not Found');
     delete user.password;
@@ -51,7 +67,8 @@ export class UsersService {
     if (!user) throw new BadRequestException('User not Found');
     return user;
   }
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(updateUserDto: UpdateUserDto, user: User) {
+    const { id } = user;
     const foundUser = await this.userRepository.findOneBy({ id });
     if (!foundUser) throw new BadRequestException('User not Found');
     const { email, name, password, username } = updateUserDto;

@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { ProductsModule } from './products/products.module';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -33,6 +34,7 @@ import { PermissionsModule } from './permissions/permissions.module';
     }),
     RolesModule,
     PermissionsModule,
+    ProductsModule,
   ],
 
   controllers: [AppController],
